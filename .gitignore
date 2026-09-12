@@ -1,0 +1,8 @@
+node_modules/
+dist/
+
+# Local agent / tooling artifacts — never commit
+.omx/
+.omc/
+.claude/
+.wrangler/

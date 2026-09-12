@@ -1,24 +1,27 @@
 # Signal Schema Website
 
-Static Cloudflare Pages-ready website for `signalschema.org`.
+Vite + React + Tailwind site for `signalschema.org`, deployed to Cloudflare Pages.
+Design exported from Figma Make: <https://www.figma.com/design/HBRl8myprZlSd9XQBYxRNC/Consulting-Company-Website>
 
-## Local preview
-
-```bash
-cd /home/rstolberg/Projects/signal_schema_website/public
-python -m http.server 8788
-```
-
-Then open <http://127.0.0.1:8788>.
-
-## Cloudflare Pages deploy
-
-If Wrangler is authenticated:
+## Local development
 
 ```bash
-cd /home/rstolberg/Projects/signal_schema_website
-npx wrangler pages deploy public --project-name signal-schema --branch main
+npm install
+npm run dev
 ```
 
-Then attach the custom domain `signalschema.org` in Cloudflare Pages → Custom domains.
-# signal-schema-website
+## Build
+
+```bash
+npm run build
+```
+
+Output goes to `dist/`. Files in `static/` (`_headers`, favicon assets) are copied into the build as-is.
+
+## Deploy
+
+```bash
+npx wrangler pages deploy dist --project-name signal-schema --branch main
+```
+
+The custom domain `signalschema.org` is attached to the project in Cloudflare Pages → Custom domains.
