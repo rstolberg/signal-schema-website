@@ -1,45 +1,11 @@
-import { useState, useEffect, type MouseEvent } from "react";
+import { useState, useEffect } from "react";
 import { ArrowRight, Mail, ExternalLink } from "lucide-react";
-
-declare global {
-  interface Window {
-    Calendly?: {
-      initPopupWidget: (options: { url: string }) => void;
-    };
-  }
-}
 
 const CALENDLY_URL = "https://calendly.com/rileystolberg/30min";
 const EMAIL = "contact@signalschema.org";
 
 const DISPLAY = { fontFamily: '"JetBrains Mono", monospace' };
 const BODY = { fontFamily: '"Figtree", sans-serif' };
-
-function useCalendlyAssets() {
-  useEffect(() => {
-    if (!document.querySelector('link[href="https://assets.calendly.com/assets/external/widget.css"]')) {
-      const link = document.createElement("link");
-      link.href = "https://assets.calendly.com/assets/external/widget.css";
-      link.rel = "stylesheet";
-      document.head.appendChild(link);
-    }
-
-    if (!document.querySelector('script[src="https://assets.calendly.com/assets/external/widget.js"]')) {
-      const script = document.createElement("script");
-      script.src = "https://assets.calendly.com/assets/external/widget.js";
-      script.type = "text/javascript";
-      script.async = true;
-      document.body.appendChild(script);
-    }
-  }, []);
-}
-
-function openCalendlyPopup(event: MouseEvent<HTMLAnchorElement>) {
-  if (!window.Calendly?.initPopupWidget) return;
-
-  event.preventDefault();
-  window.Calendly.initPopupWidget({ url: CALENDLY_URL });
-}
 
 function Nav({ scrolled }: { scrolled: boolean }) {
   return (
@@ -63,7 +29,6 @@ function Nav({ scrolled }: { scrolled: boolean }) {
           </a>
           <a
             href={CALENDLY_URL}
-            onClick={openCalendlyPopup}
             className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-semibold tracking-widest uppercase hover:bg-primary/90 transition-colors group"
             style={DISPLAY}
           >
@@ -77,11 +42,8 @@ function Nav({ scrolled }: { scrolled: boolean }) {
 }
 
 function Hero() {
-  const [visible, setVisible] = useState(false);
-  useEffect(() => {
-    const t = setTimeout(() => setVisible(true), 80);
-    return () => clearTimeout(t);
-  }, []);
+  // Keep prerendered content visible even when JavaScript is unavailable.
+  const visible = true;
 
   return (
     <section className="relative min-h-screen flex flex-col justify-center px-6 md:px-12 pt-24 pb-16 overflow-hidden">
@@ -120,8 +82,8 @@ function Hero() {
           style={DISPLAY}
           className="text-[clamp(2.8rem,8vw,7rem)] font-bold leading-[0.92] tracking-tight mb-10 max-w-5xl"
         >
-          <span className="block text-foreground">Your systems,</span>
-          <span className="block text-muted-foreground">fluent in AI.</span>
+          <span className="block text-foreground">Custom AI integrations</span>
+          <span className="block text-muted-foreground">for your business.</span>
         </h1>
 
         {/* Body */}
@@ -138,7 +100,6 @@ function Hero() {
         <div className="flex flex-col sm:flex-row gap-3">
           <a
             href={CALENDLY_URL}
-            onClick={openCalendlyPopup}
             style={DISPLAY}
             className="flex items-center justify-center gap-2.5 px-7 py-4 bg-primary text-primary-foreground text-xs font-semibold tracking-widest uppercase hover:bg-primary/90 transition-all group"
           >
@@ -194,9 +155,9 @@ function Process() {
   return (
     <section className="py-28 px-6 md:px-12 border-t border-border">
       <div className="max-w-7xl mx-auto">
-        <p style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-16">
-          // Process
-        </p>
+        <h2 style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-16">
+          // How AI integration projects work
+        </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-border">
           {steps.map((step) => (
             <div key={step.num} className="py-10 md:py-0 md:px-10 first:md:pl-0 last:md:pr-0">
@@ -219,7 +180,7 @@ function Process() {
 
 function WhatYouGet() {
   const deliverables = [
-    "Tailor made software for your companies needs",
+    "Tailor-made software for your company’s needs",
     "Custom MCP server built for your specific systems",
     "Complete source code",
     "Full technical report on potential improvements",
@@ -237,9 +198,9 @@ function WhatYouGet() {
     <section className="py-28 px-6 md:px-12 border-t border-border">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
         <div>
-          <p style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-10">
+          <h2 style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-10">
             // What you get
-          </p>
+          </h2>
           <ul className="space-y-5">
             {deliverables.map((item, i) => (
               <li key={i} className="flex items-start gap-4">
@@ -253,9 +214,9 @@ function WhatYouGet() {
         </div>
 
         <div>
-          <p style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-10">
+          <h2 style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-10">
             // Who this is for
-          </p>
+          </h2>
           <ul className="space-y-5 mb-10">
             {forWhom.map((item, i) => (
               <li key={i} className="flex items-start gap-4">
@@ -289,9 +250,9 @@ function About() {
     <section className="py-28 px-6 md:px-12 border-t border-border">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20">
         <div className="md:col-span-7">
-          <p style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-10">
-            // About
-          </p>
+          <h2 style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase mb-10">
+            // About Signal Schema
+          </h2>
           <p style={BODY} className="text-xl md:text-2xl leading-relaxed text-foreground mb-8 font-medium">
             Every integration gets my direct attention. Not a team of juniors — me.
           </p>
@@ -356,7 +317,6 @@ function FinalCTA() {
         <div className="flex flex-col sm:flex-row gap-3">
           <a
             href={CALENDLY_URL}
-            onClick={openCalendlyPopup}
             style={DISPLAY}
             className="flex items-center justify-center gap-2.5 px-8 py-4 bg-primary text-primary-foreground text-xs font-semibold tracking-widest uppercase hover:bg-primary/90 transition-all group"
           >
@@ -395,7 +355,6 @@ function Footer() {
           </a>
           <a
             href={CALENDLY_URL}
-            onClick={openCalendlyPopup}
             style={DISPLAY}
             className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
           >
@@ -410,7 +369,6 @@ function Footer() {
 
 export default function App() {
   const [scrolled, setScrolled] = useState(false);
-  useCalendlyAssets();
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -421,11 +379,13 @@ export default function App() {
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <Nav scrolled={scrolled} />
+      <main>
       <Hero />
       <Process />
       <WhatYouGet />
       <About />
       <FinalCTA />
+      </main>
       <Footer />
     </div>
   );

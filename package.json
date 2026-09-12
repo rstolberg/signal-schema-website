@@ -4,7 +4,7 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "build": "vite build",
+    "build": "vite build && node scripts/prerender.mjs",
     "dev": "vite",
     "deploy": "npx wrangler pages deploy dist --project-name signal-schema --branch main",
     "publish": "npm run build && npm run deploy",
