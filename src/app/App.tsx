@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, Mail, ExternalLink } from "lucide-react";
+import { FAQ, faqJsonLd } from "./faq";
 
 const CALENDLY_URL = "https://calendly.com/rileystolberg/30min";
 const EMAIL = "contact@signalschema.org";
@@ -73,7 +74,7 @@ function Hero() {
             <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
           </span>
           <span style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase">
-            Accepting new projects — Victoria, BC
+            Accepting new projects — Victoria &amp; Vancouver, BC
           </span>
         </div>
 
@@ -240,6 +241,7 @@ function WhatYouGet() {
 function About() {
   const facts = [
     ["Location", "Victoria, BC, Canada"],
+    ["Serving", "Vancouver Island & Metro Vancouver"],
     ["Availability", "Open to new projects"],
     ["Model", "Fixed-fee, build & handoff"],
     ["Capacity", "2–3 concurrent engagements"],
@@ -295,6 +297,37 @@ function About() {
   );
 }
 
+function Faq() {
+  return (
+    <section id="faq" className="py-28 px-6 md:px-12 border-t border-border">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-20">
+        <div className="md:col-span-4">
+          <h2 style={DISPLAY} className="text-xs text-muted-foreground tracking-[0.2em] uppercase">
+            // Questions businesses ask
+          </h2>
+        </div>
+        <div className="md:col-span-8 divide-y divide-border border-y border-border">
+          {FAQ.map(({ q, a }) => (
+            <details key={q} className="group">
+              <summary
+                style={DISPLAY}
+                className="flex items-start justify-between gap-6 py-5 cursor-pointer list-none text-sm text-foreground hover:text-primary transition-colors [&::-webkit-details-marker]:hidden"
+              >
+                <h3 className="font-semibold leading-snug">{q}</h3>
+                <span className="text-primary text-xs mt-0.5 shrink-0 transition-transform group-open:rotate-90">→</span>
+              </summary>
+              <p style={BODY} className="text-sm text-muted-foreground leading-relaxed pb-6 max-w-2xl">
+                {a}
+              </p>
+            </details>
+          ))}
+        </div>
+      </div>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
+    </section>
+  );
+}
+
 function FinalCTA() {
   return (
     <section className="py-32 px-6 md:px-12 border-t border-border relative overflow-hidden">
@@ -342,7 +375,7 @@ function Footer() {
     <footer className="border-t border-border px-6 md:px-12 py-8">
       <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
         <span style={DISPLAY} className="text-xs text-muted-foreground tracking-wider">
-          Signal Schema — Victoria, BC
+          Signal Schema — Victoria &amp; Vancouver, BC
         </span>
         <div className="flex items-center gap-6">
           <a
@@ -384,6 +417,7 @@ export default function App() {
       <Process />
       <WhatYouGet />
       <About />
+      <Faq />
       <FinalCTA />
       </main>
       <Footer />
