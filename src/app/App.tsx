@@ -1,14 +1,12 @@
 import { useState, useEffect } from "react";
 import { ArrowRight, Mail, ExternalLink } from "lucide-react";
 import { FAQ, faqJsonLd } from "./faq";
+import { BODY, CALENDLY_URL, DISPLAY, EMAIL } from "./site";
+import { WORKS } from "./works";
+import { matchRoute } from "./routes";
+import { SelectedWorks, WorkPage, WorksIndex } from "./Works";
 
-const CALENDLY_URL = "https://calendly.com/rileystolberg/30min";
-const EMAIL = "contact@signalschema.org";
-
-const DISPLAY = { fontFamily: '"JetBrains Mono", monospace' };
-const BODY = { fontFamily: '"Figtree", sans-serif' };
-
-function Nav({ scrolled }: { scrolled: boolean }) {
+function Nav({ scrolled, page }: { scrolled: boolean; page: string }) {
   return (
     <nav
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
@@ -16,10 +14,20 @@ function Nav({ scrolled }: { scrolled: boolean }) {
       }`}
     >
       <div className="max-w-7xl mx-auto px-6 md:px-12 py-5 flex items-center justify-between">
-        <span style={DISPLAY} className="text-sm font-semibold tracking-[0.15em] text-foreground uppercase">
+        <a href="/" style={DISPLAY} className="text-sm font-semibold tracking-[0.08em] sm:tracking-[0.15em] text-foreground uppercase">
           Signal Schema
-        </span>
-        <div className="flex items-center gap-4">
+        </a>
+        <div className="flex items-center gap-5 sm:gap-6">
+          {WORKS.length > 0 && (
+            <a
+              href="/works/"
+              aria-current={page === "works" || page === "work" ? "page" : undefined}
+              className="text-xs tracking-widest uppercase text-muted-foreground hover:text-foreground aria-[current=page]:text-primary transition-colors"
+              style={DISPLAY}
+            >
+              Works
+            </a>
+          )}
           <a
             href={`mailto:${EMAIL}`}
             className="hidden sm:flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors"
@@ -400,7 +408,8 @@ function Footer() {
   );
 }
 
-export default function App() {
+export default function App({ path = "/" }: { path?: string }) {
+  const route = matchRoute(path);
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -411,14 +420,21 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      <Nav scrolled={scrolled} />
+      <Nav scrolled={scrolled} page={route.page} />
       <main>
-      <Hero />
-      <Process />
-      <WhatYouGet />
-      <About />
-      <Faq />
-      <FinalCTA />
+        {route.page === "home" && (
+          <>
+            <Hero />
+            <Process />
+            <WhatYouGet />
+            <SelectedWorks />
+            <About />
+            <Faq />
+          </>
+        )}
+        {route.page === "works" && <WorksIndex />}
+        {route.page === "work" && <WorkPage work={route.work} />}
+        <FinalCTA />
       </main>
       <Footer />
     </div>

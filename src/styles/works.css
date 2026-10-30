@@ -1,0 +1,74 @@
+/* Long-form body of a work page, rendered from Markdown. */
+.work-prose {
+  color: var(--muted-foreground);
+  font-size: 1rem;
+  line-height: 1.75;
+  max-width: 68ch;
+  min-width: 0;
+}
+.work-prose > * + * { margin-top: 1.25em; }
+.work-prose h2,
+.work-prose h3,
+.work-prose h4 {
+  font-family: "JetBrains Mono", monospace;
+  color: var(--foreground);
+  font-weight: 600;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.work-prose h2 { font-size: 1.25rem; margin-top: 2.6em; }
+.work-prose h3 { font-size: 1.05rem; margin-top: 2em; }
+.work-prose h4 { font-size: 0.95rem; margin-top: 1.6em; }
+.work-prose > :first-child { margin-top: 0; }
+.work-prose p, .work-prose li { color: color-mix(in srgb, var(--foreground) 72%, var(--muted-foreground)); }
+.work-prose strong { color: var(--foreground); font-weight: 600; }
+.work-prose a { color: var(--primary); text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+.work-prose a:hover { text-decoration-thickness: 2px; }
+.work-prose ul, .work-prose ol { padding-left: 1.25em; }
+.work-prose ul { list-style: none; }
+.work-prose ul > li { position: relative; }
+.work-prose ul > li::before {
+  content: "→";
+  position: absolute;
+  left: -1.25em;
+  color: var(--primary);
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.75em;
+  top: 0.35em;
+}
+.work-prose ol { list-style: decimal; }
+.work-prose ol > li::marker { color: var(--primary); font-family: "JetBrains Mono", monospace; font-size: 0.8em; }
+.work-prose li + li { margin-top: 0.5em; }
+.work-prose blockquote {
+  border-left: 2px solid color-mix(in srgb, var(--primary) 40%, transparent);
+  padding-left: 1.25em;
+}
+.work-prose blockquote.callout {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--primary);
+  background: var(--card);
+  padding: 1em 1.25em;
+}
+.work-prose blockquote.callout[data-callout="warning"],
+.work-prose blockquote.callout[data-callout="caution"] { border-left-color: #f5b84d; }
+.work-prose code {
+  font-family: "JetBrains Mono", monospace;
+  font-size: 0.85em;
+  background: var(--muted);
+  border: 1px solid var(--border);
+  padding: 0.1em 0.35em;
+}
+.work-prose pre {
+  background: var(--card);
+  border: 1px solid var(--border);
+  padding: 1em 1.25em;
+  overflow-x: auto;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.work-prose pre code { background: none; border: 0; padding: 0; font-size: inherit; }
+.work-prose img { max-width: 100%; height: auto; border: 1px solid var(--border); }
+.work-prose hr { border: 0; border-top: 1px solid var(--border); margin: 2.5em 0; }
+.work-prose table { width: 100%; border-collapse: collapse; font-size: 0.9rem; display: block; overflow-x: auto; }
+.work-prose th, .work-prose td { border-bottom: 1px solid var(--border); padding: 0.6em 0.9em 0.6em 0; text-align: left; }
+.work-prose th { font-family: "JetBrains Mono", monospace; font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted-foreground); font-weight: 500; }

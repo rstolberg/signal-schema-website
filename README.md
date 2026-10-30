@@ -18,14 +18,35 @@ npm run build
 
 Output goes to `dist/`. Files in `static/` (`_headers`, favicon assets) are copied into the build as-is.
 
-The build prerenders the React homepage into `dist/index.html`; the browser hydrates
-that same markup. Use `npm run build`, not bare `vite build`, for production.
+The build prerenders every route (homepage and works pages) to its own `index.html`
+with its own title, description and canonical tags; the browser hydrates that same markup. Use `npm run build`, not bare `vite build`, for production.
 The homepage and booking links remain usable without JavaScript. Calendly links
 open the booking page directly, so third-party widget assets are not loaded.
 
+## Works (tools and writing from Obsidian)
+
+`/works/` lists the tools and essays in `content/works/*.md`; each file becomes
+`/works/<slug>/`, a sitemap entry and a "Selected works" row on the homepage. With no
+files, none of that renders and the site is the homepage only.
+
+Write in Obsidian at `Projects/Signal Schema/Works/` (template: *Signal Schema Work*).
+Frontmatter: `title`, `kind` (`tool` or `essay`), `summary` (one sentence; also the meta
+description), `status`, `access`, `for`, `stack` (tools), `topics` (essays), `related`,
+`date`, `featured`, `cta`, `slug`, and `publish`. Other keys, vault `tags` and `%% comments %%`
+are never copied. `[[links]]` to other published works become links; others become plain text.
+`![[image.png]]` embeds are copied to `static/works/<slug>/`.
+
+```bash
+npm run works:preview   # every note, drafts included, in the dev server (never commit this)
+npm run works:publish   # notes with publish: true → build check → commit → push (deploys)
+```
+
+Folder locations are in `works.config.json` (`WORKS_SOURCE` / `WORKS_VAULT` override them).
+`content/works/` and `static/works/` are owned by the sync script; edit the notes, not these.
+
 `static/404.html` disables Cloudflare Pages' implicit SPA fallback and gives unknown
-paths a real 404 response. `static/sitemap.xml` lists published canonical pages;
-update it when adding pages. `static/robots.txt` advertises the sitemap. Cloudflare's
+paths a real 404 response. The prerender step writes `dist/sitemap.xml` from the
+route table in `src/app/routes.ts`. `static/robots.txt` advertises the sitemap. Cloudflare's
 managed crawler restrictions remain controlled separately in the dashboard.
 
 ## Production checks and remaining account settings
