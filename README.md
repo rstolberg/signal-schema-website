@@ -36,10 +36,27 @@ description), `status`, `access`, `for`, `stack` (tools), `topics` (essays), `re
 are never copied. `[[links]]` to other published works become links; others become plain text.
 `![[image.png]]` embeds are copied to `static/works/<slug>/`.
 
+In Obsidian (desktop), the **Signal Schema Works** plugin publishes one note at a time:
+
+- *Publish a work…*: pick any note in the Works folder; it sets `publish: true` and ships it.
+- *Publish this work*: the same for the open note.
+- *Unpublish a work…*: pick a live one; it sets `publish: false` and removes the page.
+
+Each run calls `scripts/works/publish.sh --only <note>`, which syncs that note alone, checks
+the build, commits only its files and pushes (`main` only). Runs queue, so pushes never overlap.
+The plugin source is `obsidian/signal-schema-works/`; `obsidian/signal-schema-works/bin/deploy`
+installs and reloads it. Its Works folder setting must match `source` in `works.config.json`.
+
+From a terminal:
+
 ```bash
 npm run works:preview   # every note, drafts included, in the dev server (never commit this)
-npm run works:publish   # notes with publish: true → build check → commit → push (deploys)
+npm run works:publish   # all notes with publish: true; removes the rest
+npm run works:publish -- --only "<path to note.md>"
 ```
+
+A `[[link]]` to another work becomes a link only once that work is live; republish the
+linking note afterwards to pick it up.
 
 Folder locations are in `works.config.json` (`WORKS_SOURCE` / `WORKS_VAULT` override them).
 `content/works/` and `static/works/` are owned by the sync script; edit the notes, not these.

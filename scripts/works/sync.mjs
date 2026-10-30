@@ -3,6 +3,9 @@
 //
 //   node scripts/works/sync.mjs            notes with `publish: true`
 //   node scripts/works/sync.mjs --drafts   every note (local preview only; never commit)
+//   node scripts/works/sync.mjs --only <note.md>
+//       just that note: copied if it has `publish: true`, removed from the site if not.
+//       Other works already on the site are left as they are.
 //
 // Where things live is set in works.config.json (or WORKS_SOURCE / WORKS_VAULT).
 // The destination folders are owned by this script: files no longer published are removed.
@@ -22,6 +25,12 @@ const dest = path.join(root, config.content);
 const assetDest = path.join(root, config.assets);
 const assetUrl = '/' + config.assets.replace(/^static\//, '');
 const drafts = process.argv.includes('--drafts');
+const onlyArg = process.argv[process.argv.indexOf('--only') + 1];
+const only = process.argv.includes('--only') ? path.resolve(source, home(onlyArg ?? '')) : null;
+if (only !== null && (!onlyArg || !existsSync(only))) {
+  console.error(`works: note not found: ${onlyArg ?? '(missing path after --only)'}`);
+  process.exit(1);
+}
 
 if (!existsSync(source)) {
   console.error(`works: source folder not found: ${source}`);
@@ -43,11 +52,18 @@ async function walk(dir) {
 }
 
 const notes = [];
+let target = null;
 for (const file of (await walk(source)).filter((f) => f.endsWith('.md'))) {
   const { data, body } = splitFrontmatter(await readFile(file, 'utf8'));
   const name = path.basename(file, '.md');
+  const note = { file, name, data, body, slug: slugify(data.slug ?? name) };
+  if (only !== null && file === only) target = note;
   if (data.publish !== true && !drafts) continue;
-  notes.push({ file, name, data, body, slug: slugify(data.slug ?? name) });
+  notes.push(note);
+}
+if (only !== null && !target) {
+  console.error(`works: ${only} is not inside ${source}`);
+  process.exit(1);
 }
 
 const dupes = notes.map((n) => n.slug).filter((s, i, a) => a.indexOf(s) !== i);
@@ -63,7 +79,9 @@ async function findAttachment(name) {
   return vaultFiles.find((f) => path.basename(f) === path.basename(name));
 }
 
-const bySlugName = new Map(notes.map((n) => [n.name.toLowerCase(), n.slug]));
+// With --only, a [[link]] resolves only to works that are actually on the site already.
+const linkable = only === null ? notes : notes.filter((n) => n === target || existsSync(path.join(dest, `${n.slug}.md`)));
+const bySlugName = new Map(linkable.map((n) => [n.name.toLowerCase(), n.slug]));
 const warnings = [];
 
 async function transform(note) {
@@ -100,7 +118,8 @@ await mkdir(assetDest, { recursive: true });
 const keep = new Set();
 const keepAssets = new Set();
 
-for (const note of notes) {
+const toWrite = only === null ? notes : notes.filter((n) => n === target);
+for (const note of toWrite) {
   const { body, copies } = await transform(note);
   const fm = Object.fromEntries(PUBLIC_KEYS.filter((k) => note.data[k] != null).map((k) => [k, note.data[k]]));
   if (!fm.title) fm.title = note.name;
@@ -125,11 +144,24 @@ for (const note of notes) {
   console.log(`works: ${note.data.publish === true ? 'publish' : 'draft  '} ${note.slug}  ← ${path.relative(source, note.file)}`);
 }
 
-for (const f of await readdir(dest)) if (f.endsWith('.md') && !keep.has(f)) {
-  await rm(path.join(dest, f));
-  console.log(`works: removed ${f}`);
+if (only !== null) {
+  // publish.sh stages exactly these paths
+  console.log(`works: slug ${target.slug}`);
+  if (target.data.publish !== true) {
+    const f = path.join(dest, `${target.slug}.md`);
+    if (existsSync(f)) {
+      await rm(f);
+      console.log(`works: removed ${target.slug}.md`);
+    } else console.log(`works: ${target.slug} is not published (set publish: true)`);
+  }
+  if (!keepAssets.has(target.slug)) await rm(path.join(assetDest, target.slug), { recursive: true, force: true });
+} else {
+  for (const f of await readdir(dest)) if (f.endsWith('.md') && !keep.has(f)) {
+    await rm(path.join(dest, f));
+    console.log(`works: removed ${f}`);
+  }
+  for (const d of await readdir(assetDest)) if (!keepAssets.has(d)) await rm(path.join(assetDest, d), { recursive: true });
 }
-for (const d of await readdir(assetDest)) if (!keepAssets.has(d)) await rm(path.join(assetDest, d), { recursive: true });
 
 for (const w of warnings) console.warn(`works: warning: ${w}`);
-if (!notes.length) console.log(`works: nothing marked \`publish: true\` in ${source}`);
+if (!notes.length && only === null) console.log(`works: nothing marked \`publish: true\` in ${source}`);

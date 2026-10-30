@@ -1,0 +1,4 @@
+.ssw-row { display: flex; justify-content: space-between; align-items: baseline; gap: 1em; }
+.ssw-title { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ssw-meta { flex-shrink: 0; font-size: var(--font-ui-smaller); color: var(--text-muted); font-family: var(--font-monospace); }
+.ssw-meta.ssw-live { color: var(--color-green); }

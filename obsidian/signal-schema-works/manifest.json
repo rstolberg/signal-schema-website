@@ -1,0 +1,9 @@
+{
+  "id": "signal-schema-works",
+  "name": "Signal Schema Works",
+  "version": "0.1.0",
+  "minAppVersion": "1.5.0",
+  "description": "Publish or unpublish a single Works note to signalschema.org from the command palette.",
+  "author": "Riley Stolberg",
+  "isDesktopOnly": true
+}

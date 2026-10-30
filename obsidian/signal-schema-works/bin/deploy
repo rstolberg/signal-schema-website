@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Copy this plugin into the vault and reload it (see the AI Context pin
+# "Reload Changed Obsidian Plugins"). Desktop-only, so other devices skip it.
+set -euo pipefail
+cd "$(dirname "$0")/.."
+id=signal-schema-works
+dest="${VAULT:-$HOME/Documents/Main}/.obsidian/plugins/$id"
+node --check main.js
+mkdir -p "$dest"
+cp main.js manifest.json styles.css "$dest/"
+obsidian eval code="(async()=>{ await app.plugins.loadManifests(); if (!app.plugins.enabledPlugins.has('$id')) await app.plugins.enablePluginAndSave('$id'); await app.commands.executeCommandById('plugin-reloader:refresh'); await app.commands.executeCommandById('plugin-reloader:$id'); return app.plugins.manifests['$id'].version; })()"
+echo "deployed $id -> $dest"
